@@ -1,5 +1,6 @@
 # law-turk
-Predicting Decisions of Turkish Higher Courts
+Predicting Decisions of Turkish Higher Courts.
+
 Code to reproduce results given in "Natural Language Processing in Law: Prediction of outcomes in the Higher Courts of Turkey" by Emre Mumcuoğlu, Ceyhun E. Öztürk, Haldun M. Ozaktas and Aykut Koç.
 
 ## Requirements
