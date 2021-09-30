@@ -1,7 +1,5 @@
-
-
 ### Code for preparing data for the deep learning models, creating the models and training/testing
-
+import time
 import pickle
 import numpy as np
 import random
@@ -43,12 +41,11 @@ def prepare_data(court_name, label_dict, max_len):
 
     
     ### Load data
+    word_vectors = KeyedVectors.load_word2vec_format('data/trmodel', binary=True)
 
-    word_vectors = KeyedVectors.load_word2vec_format('../data/trmodel', binary=True)
-
-    with open('../data/' + court_name + '/deep/' + court_name + '_tokenized.law','rb') as pickle_file:
+    with open('data/' + court_name + '/deep/' + court_name + '_tokenized.law','rb') as pickle_file:
         tokenized = pickle.load(pickle_file)
-    with open('../data/' + court_name + '/deep/' + court_name + '_labels.law','rb') as pickle_file:
+    with open('data/' + court_name + '/deep/' + court_name + '_labels.law','rb') as pickle_file:
         labels = pickle.load(pickle_file)
 
     
@@ -142,8 +139,8 @@ def prepare_data(court_name, label_dict, max_len):
     
 
     ### dim: embedding dimension
-
-    dim = 400
+    wordsOfEmbedding = list(word_vectors.vocab.keys())
+    dim = len(word_vectors.get_vector(wordsOfEmbedding[0]))
 
     train_data = []
     val_data = []
@@ -211,13 +208,12 @@ def prepare_data(court_name, label_dict, max_len):
 
     ### Compute class weights
 
-    clweights = class_weight.compute_class_weight('balanced', np.unique(train_labels), train_labels)
+    clweights = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(train_labels), y=train_labels)
     
     clweights_dict = dict(enumerate(clweights))
     #clweights_dict = clweights
     
     return train_data, val_data, test_data, embedding_matrix, train_labels, val_labels, test_labels, clweights_dict, train_list, val_list, test_list
-    #return train_data, test_data, embedding_matrix_pca, train_labels, test_labels, clweights_dict
 
 
 
@@ -232,6 +228,7 @@ def run_model(court, model_name, mode, use_attention=True):
         load_from_check = False
         train = True
         print_test_results = False
+        startTime_s = time.time()
     elif mode == 'test':
         load_from_check = True
         train = False
@@ -277,9 +274,9 @@ def run_model(court, model_name, mode, use_attention=True):
 
     #checkpath = court_name + "weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
     if use_attention:
-        checkpath = '../models/' + court_name + '_' + model_name + '_att.hdf5'
+        checkpath = 'models/' + court_name + '_' + model_name + '_att.hdf5'
     else:
-        checkpath = '../models/' + court_name + '_' + model_name + '.hdf5'
+        checkpath = 'models/' + court_name + '_' + model_name + '.hdf5'
     
     checkpoint = ModelCheckpoint(checkpath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
@@ -293,6 +290,7 @@ def run_model(court, model_name, mode, use_attention=True):
 
     no_epochs = 30
     batch_size = 256
+
 
     # if load:
     #     model = load_model(mahkeme + '_model.h5')
@@ -314,7 +312,6 @@ def run_model(court, model_name, mode, use_attention=True):
                 sent_representation = Multiply()([x, attention])
                 sent_representation = Lambda(lambda xin: K.sum(xin, axis=1))(sent_representation)
                 probabilities = Dense(no_classes, activation='softmax')(sent_representation)
-
             else:
                 x = GRU(dim, return_sequences=False)(embed)
                 probabilities = Dense(no_classes, activation='softmax')(x)
@@ -377,12 +374,17 @@ def run_model(court, model_name, mode, use_attention=True):
     if print_test_results:
 
         print('Test Results:')
-
         prediction = model.predict(test_data)
 
+
         y_hat = np.argmax(prediction, axis=1)
-        print(metrics.accuracy_score(test_labels, y_hat))
-        print(metrics.balanced_accuracy_score(test_labels, y_hat))
-        print(metrics.f1_score(test_labels, y_hat, average='macro'))
+        print('Accuracy: ', metrics.accuracy_score(test_labels, y_hat))
+        print('Balanced Accuracy: ', metrics.balanced_accuracy_score(test_labels, y_hat))
+        print('Macro F1', metrics.f1_score(test_labels, y_hat, average='macro'))
+        print('Macro Precision', metrics.precision_score(test_labels, y_hat, average='macro'))
+        print('Macro Recall', metrics.recall_score(test_labels, y_hat, average='macro'))
+
+    if mode == 'training':
+        print('Total time passed during training: ' + str(time.time() - startTime_s))
 
     # model.save(mahkeme + '_model.h5')

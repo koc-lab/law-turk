@@ -9,7 +9,7 @@ from sklearn import ensemble
 from sklearn import metrics
 from sklearn import neighbors
 from sklearn import dummy
-
+import time
 
 
 def prepare_data(name, label_dict):
@@ -75,10 +75,11 @@ def prepare_data(name, label_dict):
 
 
 def run_model(court, model_name, mode):
+    startTime_s = time.time()
 
-    name = '../data/' + court
+    name = 'data/' + court + '/' + court
 
-    if court == 'criminal' or name == 'civil' or name == 'administrative' or name == 'taxation':
+    if court == 'criminal' or court == 'civil' or court == 'administrative' or court == 'taxation':
         label_dict = {'RED' : 0, 'KABUL' : 1}
     else:
         label_dict = {' İhlal' : 0, ' İhlal Olmadığı' : 1}
@@ -177,6 +178,10 @@ def run_model(court, model_name, mode):
 
     if mode == 'test':
         print('Test Results:')
-        print(metrics.accuracy_score(test_labels, test_hat))
-        print(metrics.balanced_accuracy_score(test_labels, test_hat))
-        print(metrics.f1_score(test_labels, test_hat, average='macro'))
+        print('Accuracy: ', metrics.accuracy_score(test_labels, test_hat))
+        print('Balanced Accuracy: ', metrics.balanced_accuracy_score(test_labels, test_hat))
+        print('Macro F1', metrics.f1_score(test_labels, test_hat, average='macro'))
+        print('Macro Precision', metrics.precision_score(test_labels, test_hat, average='macro'))
+        print('Macro Recall', metrics.recall_score(test_labels, test_hat, average='macro'))
+
+    print('Total time passed during execution (s): ' + str(time.time() - startTime_s))
