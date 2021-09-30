@@ -1,5 +1,3 @@
-
-
 import argparse
 
 import src.classify as classify
@@ -20,7 +18,7 @@ print('Attention: ', args.attention)
 
 court_names = ['constitutional', 'criminal', 'civil', 'administrative', 'taxation']
 right_names = ['constitutional_right1', 'constitutional_right2', 'constitutional_right3', 'constitutional_right4', 'constitutional_right5', 'constitutional_right6', 'constitutional_right7']
-model_names_classify = ['Dummy', 'DT', 'RF', 'SVM']
+model_names_classify = ['Dummy', 'Bayes', 'DT', 'RF', 'SVM']
 model_names_deep = ['GRU', 'LSTM', 'BiLSTM']
 modes = ['training', 'test']
 
@@ -37,6 +35,7 @@ elif args.court in right_names:
         classify.run_model(args.court, args.model_name, args.mode)
     elif args.model_name in model_names_deep:
         print('You cannot use deep learning on right-based corpora')
+
     else:
         print('Invalid Model Name')
 else:
