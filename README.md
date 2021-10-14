@@ -3,12 +3,14 @@ Predicting Decisions of Turkish Higher Courts.
 
 Code to reproduce results given in "Natural Language Processing in Law: Prediction of outcomes in the Higher Courts of Turkey" by Emre Mumcuoğlu, Ceyhun E. Öztürk, Haldun M. Ozaktas and Aykut Koç (https://www.sciencedirect.com/science/article/abs/pii/S0306457321001692, https://doi.org/10.1016/j.ipm.2021.102684).
 
-## Requirements
-* scikit-learn
-* tensorflow
-* numpy
+## Requirements 
+* scikit-learn==0.24.2
+* tensorflow==2.3.0
+* numpy==1.18.5
 * pickle
-* gensim
+* gensim==3.8.3
+
+Tested versions of the required packages are given above. The code was tested in Python 3.8. 
 
 The deep learning models require the use of word embeddings. Download a Turkish word embedding model into _data_. You can use the one we used at https://github.com/akoksal/Turkish-Word2Vec
 
