@@ -5,9 +5,7 @@ Code to reproduce results given in "Natural Language Processing in Law: Predicti
 
 ## Requirements 
 * scikit-learn==0.24.2
-* tensorflow==2.3.0
-* numpy==1.18.5
-* pickle
+* tensorflow==2.3.0 or tensorflow==2.8.0
 * gensim==3.8.3
 
 Tested versions of the required packages are given above. The code was tested in Python 3.8. 
